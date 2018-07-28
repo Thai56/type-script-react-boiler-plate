@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Statuses, Colors } from '../constants/constants';
 
 export interface ITodoProps {
     key: number;
@@ -10,15 +11,12 @@ export interface ITodoProps {
     update: (id: string) => void;
 }
 
-enum Colors {
-    TODO = 'blue',
-    IN_PROGRESS = 'yellow',
-    FINISHED = 'green',
-}
-
 const Todo: React.SFC<ITodoProps> = ({ todo: { id, name, status }, update }) => {
     return (
-        <div style={{ backgroundColor: Colors[status] }} onClick={() => update(id)}>
+        <div
+            onClick={() => update(id)}
+            style={{ backgroundColor: Colors[Statuses[status]] }}
+        >
             <b>{name}</b>
         </div>
     );

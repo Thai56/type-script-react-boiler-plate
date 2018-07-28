@@ -4,7 +4,7 @@ import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
 import injectSheet from 'react-jss'
 
-import Todo, { ITodoProps } from '../components/Todo';
+import Todo from '../components/Todo';
 
 import { TodoHelper } from '../utils/todoHelper';
 import { Statuses } from '../constants/constants';
@@ -15,11 +15,11 @@ export interface ITodosDisplayerProps {
   update: (id: string) => void;
 };
 
-const TodosDisplayer: React.SFC<ITodosDisplayerProps> = ({ todos, update }): any => {
+const TodosDisplayer: React.SFC<ITodosDisplayerProps> = ({ todos, update }): null | any => {
   return !todos.length
     ? null
     : todos.map((todo, i) => <Todo key={i} todo={todo} update={update} />);
-}; 
+};
 
 interface TodosProps {
   classes: any;
@@ -52,26 +52,26 @@ class TodosContainer extends React.Component<TodosProps> {
          </Button>
 
         <section className={classes.todosContainer}>
-          <section className={classes.todosWrapper}>
+          <div className={classes.todosWrapper}>
             <Typography variant="display1" gutterBottom>
               {Statuses[1]}
             </Typography>
             <TodosDisplayer todos={filteredTodos[Statuses[1]]} update={this.updateTodo} />
-          </section>
+          </div>
 
-          <section className={classes.todosWrapper}>
+          <div className={classes.todosWrapper}>
             <Typography variant="display1" gutterBottom>
               {Statuses[2]}
             </Typography>
             <TodosDisplayer todos={filteredTodos[Statuses[2]]} update={this.updateTodo} />
-          </section>
+          </div>
 
-          <section className={classes.todosWrapper}>
+          <div className={classes.todosWrapper}>
             <Typography variant="display1" gutterBottom>
               {Statuses[3]}
             </Typography>
             <TodosDisplayer todos={filteredTodos[Statuses[3]]} update={this.updateTodo} />
-          </section>
+          </div>
         </section>
 
       </div>
@@ -92,19 +92,24 @@ class TodosContainer extends React.Component<TodosProps> {
     }), this.resetName);
   }
 
-  changeName = (e: React.ChangeEvent<HTMLInputElement>) => 
+  changeName = (e: React.ChangeEvent<HTMLInputElement>): void =>
     this.setState({ name: e.target.value });
 
-  resetName = () =>
-    this.setState(() => ({ name: '' }));
+  removeCallback = (id: string): () => void =>
+    () => this.setState(() => ({
+      todos: this.state.todos.filter(todo => todo.id !== id),
+    }));
 
-  updateTodo = (id: string) => {
-    const todoToChange = this.state.todos;
+  resetName = (): void => this.setState(() => ({ name: '' }));
+
+  updateTodo = (id: string): void => {
     const { todos } = this.state;
-    const newTodos = todos.map((todo: { id: string, status: string }, i: number ) => {
+    const newTodos = todos.map((todo: { id: string, status: string }, i: number) => {
+
       if (todo.id === id) {
         todo.status = TodoHelper.assignNewStatus(todo.status);
       }
+
       return todo;
     });
 
