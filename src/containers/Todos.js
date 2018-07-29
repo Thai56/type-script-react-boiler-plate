@@ -21,22 +21,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __importStar(require("react"));
+var Button_1 = __importDefault(require("@material-ui/core/Button"));
+var Input_1 = __importDefault(require("@material-ui/core/Input"));
+var Typography_1 = __importDefault(require("@material-ui/core/Typography"));
+var react_jss_1 = __importDefault(require("react-jss"));
 var Todo_1 = __importDefault(require("../components/Todo"));
 var todoHelper_1 = require("../utils/todoHelper");
+var constants_1 = require("../constants/constants");
+var todoStyles_1 = __importDefault(require("../styles/todoStyles"));
 ;
 var TodosDisplayer = function (_a) {
-    var todos = _a.todos;
+    var todos = _a.todos, update = _a.update;
     return !todos.length
         ? null
-        : todos.map(function (todo, i) { return React.createElement(Todo_1.default, { key: i, todo: todo }); });
+        : todos.map(function (todo, i) { return React.createElement(Todo_1.default, { key: i, todo: todo, update: update }); });
 };
-var Statuses;
-(function (Statuses) {
-    Statuses[Statuses["TODO"] = 1] = "TODO";
-    Statuses[Statuses["IN_PROGRESS"] = 2] = "IN_PROGRESS";
-    Statuses[Statuses["FINISHED"] = 3] = "FINISHED";
-})(Statuses = exports.Statuses || (exports.Statuses = {}));
-;
 var TodosContainer = /** @class */ (function (_super) {
     __extends(TodosContainer, _super);
     function TodosContainer() {
@@ -46,107 +45,56 @@ var TodosContainer = /** @class */ (function (_super) {
             name: '',
         };
         _this.addTodo = function () {
+            if (!_this.state.name)
+                return;
             var newTodo = {
                 id: todoHelper_1.TodoHelper.generateRandomId(),
                 name: _this.state.name,
-                status: Statuses[1],
+                status: constants_1.Statuses[1],
             };
             _this.setState(function () { return ({
                 todos: _this.state.todos.concat([newTodo]),
             }); }, _this.resetName);
         };
         _this.changeName = function (e) {
-            return _this.setState(function () { return ({ name: e.target.value }); });
+            return _this.setState({ name: e.target.value });
         };
-        _this.resetName = function () {
-            return _this.setState(function () { return ({ name: '' }); });
+        _this.removeCallback = function (id) {
+            return function () { return _this.setState(function () { return ({
+                todos: _this.state.todos.filter(function (todo) { return todo.id !== id; }),
+            }); }); };
         };
-        _this.updateTodo = function (status) {
-            var todoToChange = _this.state.todos;
-            // TODO: add this functionality using lodash.
+        _this.resetName = function () { return _this.setState(function () { return ({ name: '' }); }); };
+        _this.updateTodo = function (id) {
+            var todos = _this.state.todos;
+            var newTodos = todos.map(function (todo, i) {
+                if (todo.id === id) {
+                    todo.status = todoHelper_1.TodoHelper.assignNewStatus(todo.status);
+                }
+                return todo;
+            });
+            _this.setState(function () { return ({ todos: newTodos }); });
         };
         return _this;
     }
     TodosContainer.prototype.render = function () {
+        var classes = this.props.classes;
+        var filteredTodos = todoHelper_1.TodoHelper.filterTodos(this.state.todos);
         return (React.createElement("div", null,
-            React.createElement("input", { onChange: this.changeName }),
-            React.createElement("button", { onClick: this.addTodo }, "Add Todo"),
-            React.createElement(TodosDisplayer, { todos: this.state.todos })));
+            React.createElement(Input_1.default, { id: "todo-input", onChange: this.changeName, value: this.state.name }),
+            React.createElement(Button_1.default, { color: "primary", onClick: this.addTodo, variant: "contained" }, "Add Todo"),
+            React.createElement("section", { className: classes.todosContainer },
+                React.createElement("div", { className: classes.todosWrapper },
+                    React.createElement(Typography_1.default, { variant: "display1", gutterBottom: true }, constants_1.Statuses[1]),
+                    React.createElement(TodosDisplayer, { todos: filteredTodos[constants_1.Statuses[1]], update: this.updateTodo })),
+                React.createElement("div", { className: classes.todosWrapper },
+                    React.createElement(Typography_1.default, { variant: "display1", gutterBottom: true }, constants_1.Statuses[2]),
+                    React.createElement(TodosDisplayer, { todos: filteredTodos[constants_1.Statuses[2]], update: this.updateTodo })),
+                React.createElement("div", { className: classes.todosWrapper },
+                    React.createElement(Typography_1.default, { variant: "display1", gutterBottom: true }, constants_1.Statuses[3]),
+                    React.createElement(TodosDisplayer, { todos: filteredTodos[constants_1.Statuses[3]], update: this.updateTodo })))));
     };
     return TodosContainer;
 }(React.Component));
-exports.default = TodosContainer;
-/* Using Formik below but may be over-kill for this project */
-//
-// type formikProps = {
-//   values: { name: string, status: string, id: string }
-//   errors: {},
-//   touched: {},
-// }
-//
-// const InnerForm = ({
-//   values,
-//   touched,
-//   errors,
-//   dirty,
-//   isSubmitting,
-//   handleChange,
-//   handleBlur,
-//   handleSubmit,
-//   handleReset,
-// }) => {
-//   console.log('values ', values);
-//  return (
-//    <form onSubmit={handleSubmit}>
-//      <input
-//        id="name"
-//        type="input"
-//        value={values.name}
-//        onChange={handleChange}
-//      />
-//      <button
-//       onClick={handleSubmit}
-//       disabled={isSubmitting}
-//      >
-//       Submit
-//       </button>
-//    </form>
-//  );
-// }
-//
-// const EnhancedForm = withFormik({
-//   mapPropsToValues: () => ({ name: '', todos: [] }),
-//   validationSchema: yup.object().shape({
-//     name: yup.string().required(),
-//   }),
-//   handleSubmit: (values, { setStatus, resetForm, setSubmitting, setErrors}) => {
-//     console.groupCollapsed('_Submitting!');
-//     console.log('values', values);
-//     console.groupEnd();
-//     setStatus({
-//        todos: [
-//          ...values.todos,
-//          { name: values.name, status: 'backlog' },
-//         ],
-//         name: values.name,
-//       })
-//   },
-//   displayName: 'Basic Form',
-// })(InnerForm);
-//
-// export class Todos extends React.Component<{}, TodosState> {
-//   state = {
-//     todos: [],
-//     name: '',
-//   }
-//
-//   render() {
-//     return (
-//       <div>
-//         <h1>Todo Container</h1>
-//         <div>Todos go here</div>
-//         <EnhancedForm />
-//       </div>
-//     );
-//   }
-// }
+exports.TodosContainer = TodosContainer;
+exports.default = react_jss_1.default(todoStyles_1.default)(TodosContainer);

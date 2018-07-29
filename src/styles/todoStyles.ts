@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var styles = {
+const styles = {
     todosContainer: {
         position: 'relative',
         top: 80,
@@ -13,4 +11,5 @@ var styles = {
         float: 'left',
     },
 };
-exports.default = styles;
+
+export default styles;

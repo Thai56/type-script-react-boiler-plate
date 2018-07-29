@@ -2,7 +2,7 @@ import * as React from 'react';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
-import injectSheet from 'react-jss'
+import injectSheet from 'react-jss';
 
 import Todo from '../components/Todo';
 
@@ -21,16 +21,16 @@ const TodosDisplayer: React.SFC<ITodosDisplayerProps> = ({ todos, update }): nul
     : todos.map((todo, i) => <Todo key={i} todo={todo} update={update} />);
 };
 
-interface TodosProps {
+export interface TodosProps {
   classes: any;
 }
 
-type TodosState = {
+export type TodosState = {
   todos: object[],
   name: string,
 };
 
-class TodosContainer extends React.Component<TodosProps> {
+export class TodosContainer extends React.Component<TodosProps, TodosState> {
   state = {
     todos: [],
     name: '',
@@ -42,7 +42,12 @@ class TodosContainer extends React.Component<TodosProps> {
 
     return (
       <div>
-        <Input value={this.state.name} onChange={this.changeName} />
+        <Input 
+          id="todo-input" 
+          onChange={this.changeName} 
+          value={this.state.name} 
+        />
+
         <Button
           color="primary"
           onClick={this.addTodo}
@@ -72,8 +77,7 @@ class TodosContainer extends React.Component<TodosProps> {
             </Typography>
             <TodosDisplayer todos={filteredTodos[Statuses[3]]} update={this.updateTodo} />
           </div>
-        </section>
-
+        </section> 
       </div>
     );
   }

@@ -8,15 +8,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __importStar(require("react"));
-var Colors;
-(function (Colors) {
-    Colors["TODO"] = "blue";
-    Colors["IN_PROGRESS"] = "yellow";
-    Colors["FINISHED"] = "green";
-})(Colors || (Colors = {}));
+var constants_1 = require("../constants/constants");
 var Todo = function (_a) {
-    var _b = _a.todo, name = _b.name, status = _b.status;
-    return (React.createElement("div", { style: { backgroundColor: Colors[status] } },
+    var _b = _a.todo, id = _b.id, name = _b.name, status = _b.status, update = _a.update;
+    return (React.createElement("div", { onClick: function () { return update(id); }, style: { backgroundColor: constants_1.Colors[constants_1.Statuses[status]] } },
         React.createElement("b", null, name)));
 };
 exports.default = Todo;
